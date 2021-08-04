@@ -7,34 +7,29 @@ import lombok.*;
 @Data
 public class Node {
     private Integer value;
-    private Node parent;
     private Integer trianglePathValue;
+    private String trianglePath;
 
-    public  Node(Node parent, int value) {
-        this.parent = parent;
+    public  Node(int value, String trianglePath, Integer trianglePathValue) {
         this.value = value;
-    }
-
-    public Integer getTrianglePathValue(){
-        if (trianglePathValue != null)
-            return this.trianglePathValue;
-        else {
-            this.trianglePathValue = (parent != null) ? value + parent.getTrianglePathValue() : value;
-//        System.out.println("#~#: getTrianglePathValue of value: " + value + ", parent: " + parent + ", output: " + trianglePathValue);
-        }
-        return this.trianglePathValue;
+        this.trianglePath = trianglePath;
+        this.trianglePathValue = trianglePathValue;
     }
 
     public String getTrianglePath(){
-        String output = (parent != null) ? parent.getTrianglePath() + " + " + value.toString() : value.toString();
-//        System.out.println("#~#: getTrianglePath of value: " + value + ", parent: " + parent + ", output: " +output);
-        return output;
+        return trianglePath;
     }
+
+    public Integer getTrianglePathValue(){
+        return this.trianglePathValue;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Node{");
         sb.append("value=").append(value);
-        sb.append(",parent.value=").append((parent != null)? parent.value : "null");
+        sb.append(", trianglePathValue=").append(trianglePathValue);
+        sb.append(", trianglePath='").append(trianglePath).append('\'');
         sb.append('}');
         return sb.toString();
     }
