@@ -24,10 +24,10 @@ public final class App {
             lines.add(Arrays.stream(s.nextLine().split(SPLIT_REGEX))
                     .map(Integer::parseInt).collect(Collectors.toList()));
         }
-        for(int i=lines.size()-1; i>=0; i--)
-            triangle.addElements((List) lines.get(i));
+        Collections.reverse(lines);
+        lines.stream().forEach(l -> triangle.addElements((List)l));
 
-        triangle.findMinimalPath();
+        System.out.println(triangle.findMinimalPath());
     }
 }
 

@@ -2,6 +2,8 @@ package com.suprnation.openbook;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.suprnation.openbook.ErrorMessage.NO_DATA_AVAILABLE_ERROR;
 import static com.suprnation.openbook.ErrorMessage.SYSTEM_ERROR;
@@ -12,65 +14,61 @@ import static com.suprnation.openbook.ErrorMessage.SYSTEM_ERROR;
 public class TriangleGraph {
     private List<Node> latestParents = new ArrayList<>();
 
+    private Function<List<Integer>,List<Integer>> findMins = (list -> {
+        if(list.size() >1) {
+            for (int i = list.size() - 1; i > 0; i--) {
+                list.set(i - 1, Math.min(list.get(i - 1), list.get(i)));
+            }
+            list.remove(list.size() - 1);
+        }
+        return list;
+    });
+
+    public Function<Node,String> printMinimalPath = (n -> {
+            return "Minimal path is: "
+                    + n.getTrianglePath() + " = "
+                    + n.getTrianglePathValue();
+    });
+
     public void addElements(List elements) {
-//        System.out.println("#~#: Lines: "+elements);
         if(elements.size() == 0) {
             System.out.println(NO_DATA_AVAILABLE_ERROR.getMessage());
             System.exit(1);
         } else {
-            buildTreeLayer(elements);
+            latestParents = buildTreeLayer.apply(elements, latestParents);
         }
     }
 
-    private void buildTreeLayer(List<Integer> elements) {
-        List<Node> parents = new ArrayList<>();
+    BiFunction<List<Integer>,List<Node>,List<Node>> buildTreeLayer =
+            (elements, latestParents) -> {
+                List<Node> parents = new ArrayList<>();
 
-//        System.out.println("#~#: elements.size: " + elements.size() + ", latestParent.size(): " + latestParents.size());
+                elements = findMins.apply(elements);
 
-        if(elements.size() >1) {
-            for (int i = elements.size() - 1; i > 0; i--) {
-                elements.set(i - 1, Math.min(elements.get(i - 1), elements.get(i)));
-            }
+                if (latestParents.size() == 0) {
+                    elements.stream().forEach(e -> {
+                        parents.add(new Node(e.intValue(), String.valueOf(e.intValue()), e.intValue()));
+                    });
+                } else {
+                    AtomicInteger atom = new AtomicInteger(0);
+                    List<Node> finalLatestParents = latestParents;
+                    elements.stream().forEach(e -> {
+                        int val = e.intValue();
+                        parents.add(new Node(val,
+                                String.valueOf(val) + " + "
+                                        + finalLatestParents.get(atom.intValue()).getTrianglePath(),
+                                val + finalLatestParents.get(atom.getAndIncrement()).getTrianglePathValue()));
+                    });
+                }
 
-            elements.remove(elements.size() - 1);
+                System.out.println("latestParents(#"+parents.size()+"): ");// + latestChildren);
+                return parents;
+            };
 
-            if (latestParents.size() == 0) {
-                elements.stream().forEach(e -> {
-                    parents.add(new Node(e.intValue(), String.valueOf(e.intValue()), e.intValue()));
-                });
-            } else {
-                AtomicInteger atom = new AtomicInteger(0);
-                elements.stream().forEach(e -> {
-                    int val = e.intValue();
-                    parents.add(new Node(val,
-                            String.valueOf(val) + " + "
-                                    + latestParents.get(atom.intValue()).getTrianglePath(),
-                            val + latestParents.get(atom.getAndIncrement()).getTrianglePathValue()));
-                });
-            }
-        } else {
-            System.out.println("#~#: ROOT value: elements: " + elements);
-            //TODO: include this 'else' step in the previous 'else' step
-            parents.add(new Node(elements.get(0),
-                    String.valueOf(elements.get(0)) + " + "
-                            + latestParents.get(0).getTrianglePath(),
-                    elements.get(0) + latestParents.get(0).getTrianglePathValue()));
-        }
-
-//        System.out.println("#~#: elements: [#"+elements.size()+"]" + elements);
-
-        latestParents = parents;
-        System.out.println("latestParents(#"+latestParents.size()+"): ");// + latestChildren);
-//        System.out.println("latestParents(#"+latestParents.size()+"): " + latestParents);
-    }
-
-        public String findMinimalPath() {
+    public String findMinimalPath() {
         String output = null;
         if(latestParents.size() == 1) {
-            output = "Minimal path is: ";
-            output += latestParents.get(0).getTrianglePath() + " = ";
-            output += latestParents.get(0).getTrianglePathValue();
-            System.out.println(output);
+            output = printMinimalPath.apply(latestParents.get(0));
         } else {
             System.out.println(SYSTEM_ERROR.getMessage());
             System.exit(1);
