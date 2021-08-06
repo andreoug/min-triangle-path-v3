@@ -3,7 +3,10 @@ package com.suprnation.openbook;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Predicate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.suprnation.openbook.ErrorMessage.NO_DATA_AVAILABLE_ERROR;
 import static com.suprnation.openbook.ErrorMessage.SYSTEM_ERROR;
@@ -12,38 +15,54 @@ import static com.suprnation.openbook.ErrorMessage.SYSTEM_ERROR;
  * Created by gandreou on 02/08/2021.
  */
 public class TriangleGraph {
+    Logger logger = LoggerFactory.getLogger(TriangleGraph.class);
     private List<Node> latestParents = new ArrayList<>();
 
-    private Function<List<Integer>,List<Integer>> findMins = (list -> {
-        if(list.size() >1) {
-            for (int i = list.size() - 1; i > 0; i--) {
-                list.set(i - 1, Math.min(list.get(i - 1), list.get(i)));
+    private BiFunction<List<Node>,Comparator<Integer>, List<Node>> extractComparables = ((list, comp) -> {
+        List<Node> out = new ArrayList();
+        if(list.size() > 1) {
+            for (int i = 0; i < list.size()-1; i++) {
+                if(comp.compare(list.get(i).getTrianglePathValue(), list.get(i+1).getTrianglePathValue()) == -1)
+                    out.add(list.get(i));
+                else
+                    out.add(list.get(i+1));
             }
-            list.remove(list.size() - 1);
+            return out;
         }
         return list;
     });
 
-    public Function<Node,String> printMinimalPath = (n -> {
-            return "Minimal path is: "
-                    + n.getTrianglePath() + " = "
-                    + n.getTrianglePathValue();
-    });
-
-    public void addElements(List elements) {
-        if(elements.size() == 0) {
-            System.out.println(NO_DATA_AVAILABLE_ERROR.getMessage());
+    private Predicate<List> isNotEmpty = (list) -> {
+        if(list.isEmpty()) {
+            logger.error("{}",NO_DATA_AVAILABLE_ERROR.getMessage());
             System.exit(1);
-        } else {
-            latestParents = buildTreeLayer.apply(elements, latestParents);
+            return false;
         }
+        return true;
+    };
+
+    private BiFunction <Node, String, String> createOutput = (n, s) ->
+            s + " " + n.getTrianglePath() + " = " + n.getTrianglePathValue();
+
+    private void addElements(List elements, Comparator comp) {
+        if(isNotEmpty.test(elements))
+            latestParents = buildTreeLayer.apply(elements, latestParents);
+        latestParents = extractComparables.apply(latestParents, comp);
+    }
+
+    public void addElementsForMinimumPath(List elements) {
+        Comparator<Integer> comp = Comparator.naturalOrder();
+        this.addElements(elements, comp);
+    }
+
+    public void addElementsForMaximumPath(List elements) {
+        Comparator<Integer> comp = Comparator.reverseOrder();
+        this.addElements(elements, comp);
     }
 
     BiFunction<List<Integer>,List<Node>,List<Node>> buildTreeLayer =
             (elements, latestParents) -> {
                 List<Node> parents = new ArrayList<>();
-
-                elements = findMins.apply(elements);
 
                 if (latestParents.size() == 0) {
                     elements.stream().forEach(e -> {
@@ -61,19 +80,29 @@ public class TriangleGraph {
                     });
                 }
 
-                System.out.println("latestParents(#"+parents.size()+"): ");// + latestChildren);
+                logger.info("latestParents(#{}",parents.size());
                 return parents;
             };
 
-    public String findMinimalPath() {
+    public String getMinPath() {
         String output = null;
         if(latestParents.size() == 1) {
-            output = printMinimalPath.apply(latestParents.get(0));
+            output = createOutput.apply(latestParents.get(0), "Minimal path is:");
         } else {
-            System.out.println(SYSTEM_ERROR.getMessage());
+            logger.error("{}", SYSTEM_ERROR.getMessage());
             System.exit(1);
         }
+        return output;
+    }
 
+    public String getMaxPath() {
+        String output = null;
+        if(latestParents.size() == 1) {
+            output = createOutput.apply(latestParents.get(0), "Miximal path is:");
+        } else {
+            logger.error("{}", SYSTEM_ERROR.getMessage());
+            System.exit(1);
+        }
         return output;
     }
 }

@@ -28,8 +28,8 @@ public class Node {
     public String toString() {
         final StringBuffer sb = new StringBuffer("Node{");
         sb.append("value=").append(value);
-        sb.append(", trianglePathValue=").append(trianglePathValue);
-        sb.append(", trianglePath='").append(trianglePath).append('\'');
+        sb.append(", trValue=").append(trianglePathValue);
+        sb.append(", trPath='").append(trianglePath).append('\'');
         sb.append('}');
         return sb.toString();
     }

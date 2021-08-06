@@ -7,3 +7,4 @@ out
 *.iml
 mvnw*
 /dependency-reduced-pom.xml
+out.log

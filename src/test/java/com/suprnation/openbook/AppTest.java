@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.hamcrest.core.Is.is;
@@ -100,6 +99,11 @@ public class AppTest {
         Collections.reverse(list);
         System.out.println(list);
 
+        Comparator<Integer> comp = (a, b) -> a.compareTo(b);
+        assertThat(comp.compare(3,2),is(1));
+        assertThat(comp.compare(1,2),is(-1)); //1>2 False
+        comp = comp.reversed();
+        assertThat(comp.compare(1,2),is(1)); //2>1 True
     }
 
     @Test
@@ -115,10 +119,10 @@ public class AppTest {
                 "";
         List<String> dataArray = Arrays.asList(data.split("\n"));
         for(String s: dataArray) {
-            triangle.addElements(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
+            triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
 
-        assertThat(triangle.findMinimalPath(), is("Minimal path is: 1 + 21 + 31 = 53"));
+        assertThat(triangle.getMinPath(), is("Minimal path is: 1 + 21 + 31 = 53"));
     }
 
     @Test
@@ -134,14 +138,14 @@ public class AppTest {
                 "";
         List<String> dataArray = Arrays.asList(data.split("\n"));
         for(String s: dataArray) {
-            triangle.addElements(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
+            triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
 
-        assertThat(triangle.findMinimalPath(), is("Minimal path is: 1 + 32 + 22 = 55"));
+        assertThat(triangle.getMinPath(), is("Minimal path is: 1 + 33 + 22 = 56"));
     }
 
     @Test
-    public void shouldReturnMultipleMinTriangleValuesForDifferectPaths_emulateApp() {
+    public void shouldReturnMinTriangleValuesForDifferentPaths_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
         boolean success = true;
@@ -153,10 +157,55 @@ public class AppTest {
                 "";
         List<String> dataArray = Arrays.asList(data.split("\n"));
         for(String s: dataArray) {
-            triangle.addElements(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
+            triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
 
-        assertThat(triangle.findMinimalPath(), is("Minimal path is: 2 + 32 + 2 = 36"));
+        assertThat(triangle.getMinPath(), is("Minimal path is: 2 + 32 + 2 = 36"));
 
     }
+
+    @Test
+    public void shouldReturnMinTriangleValues_emulateApp() {
+
+        TriangleGraph triangle = new TriangleGraph();
+        boolean success = true;
+
+        String data =
+                "30000 20000 10000 40000 50000\n"+
+                        "3000 2000 1000 4000\n"+
+                        "300 200 100\n"+
+                        "20 10\n"+
+                        "1\n"+
+                        "";
+        List<String> dataArray = Arrays.asList(data.split("\n"));
+        for(String s: dataArray) {
+            triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
+        }
+
+        assertThat(triangle.getMinPath(), is("Minimal path is: 1 + 10 + 100 + 1000 + 10000 = 11111"));
+
+    }
+
+    @Test
+    public void shouldReturnMaxTriangleValues_emulateApp() {
+
+        TriangleGraph triangle = new TriangleGraph();
+        boolean success = true;
+
+        String data =
+                "30000 20000 10000 40000 50000\n"+
+                        "3000 2000 1000 4000\n"+
+                        "300 200 100\n"+
+                        "20 10\n"+
+                        "1\n"+
+                        "";
+        List<String> dataArray = Arrays.asList(data.split("\n"));
+        for(String s: dataArray) {
+            triangle.addElementsForMaximumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
+        }
+
+        assertThat(triangle.getMaxPath(), is("Miximal path is: 1 + 10 + 100 + 4000 + 50000 = 54111"));
+
+    }
+
 }
