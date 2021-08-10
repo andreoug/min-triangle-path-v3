@@ -1,9 +1,9 @@
 package com.suprnation.openbook;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,15 +69,12 @@ public class TriangleGraph {
                         parents.add(new Node(e.intValue(), String.valueOf(e.intValue()), e.intValue()));
                     });
                 } else {
-                    AtomicInteger atom = new AtomicInteger(0);
-                    List<Node> finalLatestParents = latestParents;
-                    elements.stream().forEach(e -> {
-                        int val = e.intValue();
+                    IntStream.range(0,elements.size()).forEach( e -> {
+                        int val = elements.get(e).intValue();
                         parents.add(new Node(val,
                                 String.valueOf(val) + " + "
-                                        + finalLatestParents.get(atom.intValue()).getTrianglePath(),
-                                val + finalLatestParents.get(atom.getAndIncrement()).getTrianglePathValue()));
-                    });
+                                        + latestParents.get(e).getTrianglePath(),
+                                val + latestParents.get(e).getTrianglePathValue()));                    });
                 }
 
                 logger.info("latestParents(#{}",parents.size());
