@@ -16,14 +16,6 @@ public class Node {
         this.trianglePathValue = trianglePathValue;
     }
 
-    public String getTrianglePath(){
-        return trianglePath;
-    }
-
-    public Integer getTrianglePathValue(){
-        return this.trianglePathValue;
-    }
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Node{");

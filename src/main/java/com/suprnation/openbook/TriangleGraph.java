@@ -16,7 +16,7 @@ import static com.suprnation.openbook.ErrorMessage.SYSTEM_ERROR;
  */
 public class TriangleGraph {
     Logger logger = LoggerFactory.getLogger(TriangleGraph.class);
-    private List<Node> latestParents = new ArrayList<>();
+    private List<Node> parents = new ArrayList<>();
 
     private BiFunction<List<Node>,Comparator<Integer>, List<Node>> extractComparables = ((list, comp) -> {
         List<Node> out = new ArrayList();
@@ -44,10 +44,10 @@ public class TriangleGraph {
     private BiFunction <Node, String, String> createOutput = (n, s) ->
             s + " " + n.getTrianglePath() + " = " + n.getTrianglePathValue();
 
-    private void addElements(List elements, Comparator comp) {
+    private void addElements(List<Integer> elements, Comparator comp) {
         if(isNotEmpty.test(elements))
-            latestParents = buildTreeLayer.apply(elements, latestParents);
-        latestParents = extractComparables.apply(latestParents, comp);
+            parents = buildTreeLayer.apply(elements, parents);
+        parents = extractComparables.apply(parents, comp);
     }
 
     public void addElementsForMinimumPath(List elements) {
@@ -60,31 +60,33 @@ public class TriangleGraph {
         this.addElements(elements, comp);
     }
 
-    BiFunction<List<Integer>,List<Node>,List<Node>> buildTreeLayer =
-            (elements, latestParents) -> {
-                List<Node> parents = new ArrayList<>();
+    BiFunction<Integer,Node, Node> updateNode = (val, node) -> {
+        return new Node(val,
+                String.valueOf(val.intValue()) + " + " + node.getTrianglePath(),
+                node.getTrianglePathValue()+val.intValue());
+    };
 
-                if (latestParents.size() == 0) {
+    BiFunction<List<Integer>,List<Node>,List<Node>> buildTreeLayer =
+            (elements, parents) -> {
+                if (parents.size() == 0) {
                     elements.stream().forEach(e -> {
                         parents.add(new Node(e.intValue(), String.valueOf(e.intValue()), e.intValue()));
                     });
                 } else {
                     IntStream.range(0,elements.size()).forEach( e -> {
-                        int val = elements.get(e).intValue();
-                        parents.add(new Node(val,
-                                String.valueOf(val) + " + "
-                                        + latestParents.get(e).getTrianglePath(),
-                                val + latestParents.get(e).getTrianglePathValue()));                    });
+                        Node node = updateNode.apply(elements.get(e).intValue(),parents.get(e));
+                        parents.set(e, node);
+                    });
                 }
 
-                logger.info("latestParents(#{}",parents.size());
+                logger.info("parents(#{}",parents.size());
                 return parents;
             };
 
     public String getMinPath() {
         String output = null;
-        if(latestParents.size() == 1) {
-            output = createOutput.apply(latestParents.get(0), "Minimal path is:");
+        if(parents.size() == 1) {
+            output = createOutput.apply(parents.get(0), "Minimal path is:");
         } else {
             logger.error("{}", SYSTEM_ERROR.getMessage());
             System.exit(1);
@@ -94,8 +96,8 @@ public class TriangleGraph {
 
     public String getMaxPath() {
         String output = null;
-        if(latestParents.size() == 1) {
-            output = createOutput.apply(latestParents.get(0), "Miximal path is:");
+        if(parents.size() == 1) {
+            output = createOutput.apply(parents.get(0), "Miximal path is:");
         } else {
             logger.error("{}", SYSTEM_ERROR.getMessage());
             System.exit(1);
