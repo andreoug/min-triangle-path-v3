@@ -1,6 +1,6 @@
 package com.suprnation.openbook;
 
-import lombok.*;
+import lombok.Data;
 /**
  * Created by gandreou on 02/08/2021.
  */

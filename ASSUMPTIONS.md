@@ -12,5 +12,4 @@
     * [data.sample](./data.sample.txt) last row's is producing 5 parents
     
 #### Next Steps
-1. Implement appropriate partitioning approach for big input files with more than 2000 lines 
-1. clean pom file
+1. Implement appropriate partitioning approach for big input files with more than 2000 lines
