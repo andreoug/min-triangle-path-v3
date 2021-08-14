@@ -8,5 +8,5 @@
 # EOF
 
 #Testing B:
-#cat be_data_big.txt | java -jar ./target/min-triangle-path-1.0-SNAPSHOT.jar
-cat data.sample.txt | java -Xmx2048m -jar ./target/min-triangle-path-1.0-SNAPSHOT.jar
+cat be_data_big.txt | java -jar ./target/min-triangle-path-1.0-SNAPSHOT.jar
+#cat data.sample.txt | java -Xmx2048m -jar ./target/min-triangle-path-1.0-SNAPSHOT.jar

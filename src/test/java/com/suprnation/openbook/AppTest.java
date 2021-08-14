@@ -1,10 +1,6 @@
 package com.suprnation.openbook;
 
-/**
- * Created by gandreou on 02/08/2021.
- */
 import org.junit.Test;
-
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -28,25 +24,24 @@ public class AppTest {
     public void shouldReturnsTrueValues() {
 
         Function<Long, Long> adder = (value) -> value + 3;
-        Long resultLambda = adder.apply((long) 8);
         assertThat(adder.apply((long)8), is((long)11));
 
-        Predicate predicate = (value) -> value != null;
-        assertThat(predicate.test(null), is(false));
+        Predicate<Boolean> predicate = (value) -> !value;
+        assertThat(predicate.test(false), is(true));
 
         UnaryOperator<Integer> unaryOperator =
-                (i) -> { i = new Integer(1); return i; };
-        assertThat(unaryOperator.apply(new Integer(0)), is(new Integer(1)));
+                (i) -> { i = 1; return i; };
+        assertThat(unaryOperator.apply(0), is(1));
 
-        BinaryOperator<List> binaryOperator =
+        BinaryOperator<List<String>> binaryOperator =
                 (value1, value2) -> { value2.addAll(value1); return value1; };
         String[] strArray1 = {"Delhi", "Mumbai", "Kolkata", "Chennai"};
-        List<String> mylist1 = new ArrayList<String>(Arrays.asList(strArray1));
+        List<String> myList1 = new ArrayList<>(Arrays.asList(strArray1));
         String[] strArray2 = {"1", "2", "3", "4"};
-        List<String> mylist2 = new ArrayList<String>(Arrays.asList(strArray2));
-        assertThat(binaryOperator.apply(mylist1,mylist2), is(mylist1));
+        List<String> myList2 = new ArrayList<>(Arrays.asList(strArray2));
+        assertThat(binaryOperator.apply(myList1,myList2), is(myList1));
 
-        Supplier<Integer> supplier = () -> new Integer((int) (1));
+        Supplier<Integer> supplier = () -> 1;
         assertThat(supplier.get(), is(1));
 
         Consumer<Integer> consumer = (value) -> System.out.println("#~#: consumer: " + value);
@@ -90,7 +85,7 @@ public class AppTest {
         assertThat(list1, is(list1));
         // Print the list
         System.out.println("List from Java 8 stream: "
-                + list1.toString());
+                + list1);
         //ref: https://www.softwaretestinghelp.com/java-list-how-to-create-initialize-use-list-in-java/
 
 
@@ -99,7 +94,7 @@ public class AppTest {
         Collections.reverse(list);
         System.out.println(list);
 
-        Comparator<Integer> comp = (a, b) -> a.compareTo(b);
+        Comparator<Integer> comp = Integer::compareTo;
         assertThat(comp.compare(3,2),is(1));
         assertThat(comp.compare(1,2),is(-1)); //1>2 False
         comp = comp.reversed();
@@ -110,14 +105,13 @@ public class AppTest {
     public void shouldReturnSingleMinTriangleValue_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
-        boolean success = true;
 
         String data =
                 "31 32 33\n" +
                 "21 22\n" +
                 "1\n" +
                 "";
-        List<String> dataArray = Arrays.asList(data.split("\n"));
+        String[] dataArray = data.split("\n");
         for(String s: dataArray) {
             triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
@@ -129,14 +123,13 @@ public class AppTest {
     public void shouldReturnSingleMinTriangleValueWithDiffNumbers_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
-        boolean success = true;
 
         String data =
                 "22 32 33\n" +
                 "33 32\n" +
                 "1\n" +
                 "";
-        List<String> dataArray = Arrays.asList(data.split("\n"));
+        String[] dataArray = data.split("\n");
         for(String s: dataArray) {
             triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
@@ -148,14 +141,13 @@ public class AppTest {
     public void shouldReturnMinTriangleValuesForDifferentPaths_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
-        boolean success = true;
 
         String data =
                 "22 2 33\n" +
                 "33 32\n" +
                 "2\n" +
                 "";
-        List<String> dataArray = Arrays.asList(data.split("\n"));
+        String[] dataArray = data.split("\n");
         for(String s: dataArray) {
             triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
@@ -168,7 +160,6 @@ public class AppTest {
     public void shouldReturnMinTriangleValues_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
-        boolean success = true;
 
         String data =
                 "30000 20000 10000 40000 50000\n"+
@@ -177,7 +168,7 @@ public class AppTest {
                         "20 10\n"+
                         "1\n"+
                         "";
-        List<String> dataArray = Arrays.asList(data.split("\n"));
+        String[] dataArray = data.split("\n");
         for(String s: dataArray) {
             triangle.addElementsForMinimumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }
@@ -190,7 +181,6 @@ public class AppTest {
     public void shouldReturnMaxTriangleValues_emulateApp() {
 
         TriangleGraph triangle = new TriangleGraph();
-        boolean success = true;
 
         String data =
                 "30000 20000 10000 40000 50000\n"+
@@ -199,7 +189,7 @@ public class AppTest {
                         "20 10\n"+
                         "1\n"+
                         "";
-        List<String> dataArray = Arrays.asList(data.split("\n"));
+        String[] dataArray = data.split("\n");
         for(String s: dataArray) {
             triangle.addElementsForMaximumPath(Arrays.stream(s.split(SPLIT_REGEX)).sequential().map(Integer::parseInt).collect(Collectors.toList()));
         }

@@ -1,9 +1,7 @@
 package com.suprnation.openbook;
 
 import lombok.Data;
-/**
- * Created by gandreou on 02/08/2021.
- */
+
 @Data
 public class Node {
     private Integer value;
@@ -18,11 +16,9 @@ public class Node {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Node{");
-        sb.append("value=").append(value);
-        sb.append(", trValue=").append(trianglePathValue);
-        sb.append(", trPath='").append(trianglePath).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Node{" + "value=" + value +
+                ", trValue=" + trianglePathValue +
+                ", trPath='" + trianglePath + '\'' +
+                '}';
     }
 }

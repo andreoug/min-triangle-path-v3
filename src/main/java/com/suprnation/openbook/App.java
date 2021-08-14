@@ -5,15 +5,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * Created by gandreou on 02/08/2021.
- */
 public final class App {
-    private static Logger logger = LoggerFactory.getLogger(App.class);
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
     private final static String SPLIT_REGEX = " ";
 
-    private static List lines = new ArrayList();
+    private static final List<List<Integer>> lines = new ArrayList<>();
 
     public App() {}
 
@@ -28,7 +24,7 @@ public final class App {
                     .map(Integer::parseInt).collect(Collectors.toList()));
         }
         Collections.reverse(lines);
-        lines.stream().forEach(l -> triangle.addElementsForMinimumPath((List)l));
+        lines.forEach(triangle::addElementsForMinimumPath);
         System.out.println(triangle.getMinPath());
     }
 }
